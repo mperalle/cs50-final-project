@@ -6,7 +6,7 @@ import (
 )
 
 // declaration of the handler function of type http.HandlerFunc to pass it in http.HandleFunc
-func homeFunction(w http.ResponseWriter, r *http.Request) {
+func homeHandler(w http.ResponseWriter, r *http.Request) {
 	//explicitely set the header content-type to html
 	w.Header().Set("Content-Type", "text/html")
 	//writing the HTML response
@@ -21,11 +21,25 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Contact Page</h1><p>To get in touch, email me at <a href=\"mailto:marvin@cs50.com\">marvin@cs50.com</a>.</p>")
 }
 
+func NotFound(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "404 page not found", http.StatusNotFound)
+}
+
+// declaration of a basic router
+func pathHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/":
+		homeHandler(w, r)
+	case "/contact":
+		contactHandler(w, r)
+	default:
+		NotFound(w, r)
+	}
+
+}
+
 func main() {
-	//register a handler function to handle all incoming web requests
-	http.HandleFunc("/", homeFunction)
-	//register a handler function for contact page
-	http.HandleFunc("/contact", contactHandler)
+	http.HandleFunc("/", pathHandler)
 	//start the server on port :3000
 	fmt.Println("Starting the server on port :3000 ...")
 	http.ListenAndServe(":3000", nil)
