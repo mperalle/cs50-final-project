@@ -25,10 +25,8 @@ func NotFound(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "404 page not found", http.StatusNotFound)
 }
 
-type Routeur struct{}
-
-func (routeur Routeur) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
+// declaration of a basic router
+func pathHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
 	case "/":
 		homeHandler(w, r)
@@ -41,10 +39,8 @@ func (routeur Routeur) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	//http.HandleFunc("/", pathHandler)
-	routeur := Routeur{}
 	//start the server on port :3000
 	fmt.Println("Starting the server on port :3000 ...")
-	http.ListenAndServe(":3000", routeur)
-
+	//convert the pathHandler into HandlerFunc type in order to implement Handler interface and pass it to ListenAndServe
+	http.ListenAndServe(":3000", http.HandlerFunc(pathHandler))
 }
