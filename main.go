@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -11,9 +13,29 @@ import (
 // declaration of the handler function of type http.HandlerFunc to pass it in http.HandleFunc
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	//explicitely set the header content-type to html
-	w.Header().Set("Content-Type", "text/html")
-	//writing the HTML response
-	fmt.Fprint(w, "<h1>Welcome to my CS50 final project website!</h1>")
+	w.Header().Set("Content-Type", "text/html;charset=utf-8")
+	//parse HTML template and execute it
+	tpl, err := template.ParseFiles("templates/home.gohtml")
+	//handle error in html parsing
+	if err != nil {
+		//logs error message out to terminal
+		log.Printf("parsing template: %v", err)
+		//writes 500 status code in the response
+		http.Error(w, "There was an error parsing the template.", http.StatusInternalServerError)
+		//prevents further code from executing
+		return
+	}
+
+	err = tpl.Execute(w, nil)
+	//handle errors during execution
+	if err != nil {
+		//logs error message out to terminal
+		log.Printf("executing template: %v", err)
+		//writes 500 status code in the response
+		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
+		//prevents further code from executing
+		return
+	}
 }
 
 // declaration of the handler function for contact page
