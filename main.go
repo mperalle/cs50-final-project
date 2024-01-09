@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 // declaration of the handler function of type http.HandlerFunc to pass it in http.HandleFunc
@@ -35,12 +36,21 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 	</ul>`)
 }
 
+func galleriesHandler(w http.ResponseWriter, r *http.Request) {
+	//set header content-type to html
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	userID := chi.URLParam(r, "userID")
+	//writing the HTML response
+	w.Write([]byte(fmt.Sprintf("The userID is %v", userID)))
+}
 func main() {
 	//register handler functions to a new Chi Routeur
 	r := chi.NewRouter()
+	r.Use(middleware.Logger)
 	r.Get("/", homeHandler)
 	r.Get("/contact", contactHandler)
 	r.Get("/faq", faqHandler)
+	r.Get("/galleries/{userID}", galleriesHandler)
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 Error Page not found", http.StatusNotFound)
 	})
