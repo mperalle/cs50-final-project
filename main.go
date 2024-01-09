@@ -40,10 +40,30 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 // declaration of the handler function for contact page
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	//set header content-type to html
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	//writing the HTML response
-	fmt.Fprint(w, "<h1>Contact Page</h1><p>To get in touch, email me at <a href=\"mailto:marvin@cs50.com\">marvin@cs50.com</a>.</p>")
+	//explicitely set the header content-type to html
+	w.Header().Set("Content-Type", "text/html;charset=utf-8")
+	//parse HTML template and execute it
+	tpl, err := template.ParseFiles("templates/contact.gohtml")
+	//handle error in html parsing
+	if err != nil {
+		//logs error message out to terminal
+		log.Printf("parsing template: %v", err)
+		//writes 500 status code in the response
+		http.Error(w, "There was an error parsing the template.", http.StatusInternalServerError)
+		//prevents further code from executing
+		return
+	}
+
+	err = tpl.Execute(w, nil)
+	//handle errors during execution
+	if err != nil {
+		//logs error message out to terminal
+		log.Printf("executing template: %v", err)
+		//writes 500 status code in the response
+		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
+		//prevents further code from executing
+		return
+	}
 }
 
 // declaration of handler function for faq page
