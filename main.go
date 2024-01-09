@@ -10,22 +10,19 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-// declaration of the handler function of type http.HandlerFunc to pass it in http.HandleFunc
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	//explicitely set the header content-type to html
-	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-	//parse HTML template and execute it
-	tpl, err := template.ParseFiles("templates/home.gohtml")
-	//handle error in html parsing
+func executeTemplate(w http.ResponseWriter, filepath string) {
+	//set the header content-type to html
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	tpl, err := template.ParseFiles(filepath)
+	//handle errors during parsing
 	if err != nil {
 		//logs error message out to terminal
-		log.Printf("parsing template: %v", err)
+		log.Printf("processing template: %v", err)
 		//writes 500 status code in the response
-		http.Error(w, "There was an error parsing the template.", http.StatusInternalServerError)
+		http.Error(w, "There was an error processing the template.", http.StatusInternalServerError)
 		//prevents further code from executing
 		return
 	}
-
 	err = tpl.Execute(w, nil)
 	//handle errors during execution
 	if err != nil {
@@ -36,46 +33,24 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		//prevents further code from executing
 		return
 	}
+
+}
+
+// declaration of the handler function of type http.HandlerFunc to pass it in http.HandleFunc
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	tplPath := "templates/home.gohtml"
+	executeTemplate(w, tplPath)
 }
 
 // declaration of the handler function for contact page
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	//explicitely set the header content-type to html
-	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-	//parse HTML template and execute it
-	tpl, err := template.ParseFiles("templates/contact.gohtml")
-	//handle error in html parsing
-	if err != nil {
-		//logs error message out to terminal
-		log.Printf("parsing template: %v", err)
-		//writes 500 status code in the response
-		http.Error(w, "There was an error parsing the template.", http.StatusInternalServerError)
-		//prevents further code from executing
-		return
-	}
-
-	err = tpl.Execute(w, nil)
-	//handle errors during execution
-	if err != nil {
-		//logs error message out to terminal
-		log.Printf("executing template: %v", err)
-		//writes 500 status code in the response
-		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
-		//prevents further code from executing
-		return
-	}
+	tplPath := "templates/contact.gohtml"
+	executeTemplate(w, tplPath)
 }
 
 // declaration of handler function for faq page
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	//set header content-type to html
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	//writing the HTML response
-	fmt.Fprint(w, `<h1>FAQ Page</h1>
-	<ul>
-		<li> <b>Is this application free to use ?</b> Yes it is completly free to use !</li>
-		<li> <b>How can I get in touch with you ?</b> You can contact me via the email in the contact page</li>
-	</ul>`)
+	executeTemplate(w, "templates/faq.gohtml")
 }
 
 func galleriesHandler(w http.ResponseWriter, r *http.Request) {
