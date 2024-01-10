@@ -13,6 +13,7 @@ import (
 func executeTemplate(w http.ResponseWriter, filepath string) {
 	//set the header content-type to html
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	//create template from template files
 	tpl, err := template.ParseFiles(filepath)
 	//handle errors during parsing
 	if err != nil {
@@ -23,6 +24,7 @@ func executeTemplate(w http.ResponseWriter, filepath string) {
 		//prevents further code from executing
 		return
 	}
+	//write output of execution to the response
 	err = tpl.Execute(w, nil)
 	//handle errors during execution
 	if err != nil {
@@ -38,19 +40,19 @@ func executeTemplate(w http.ResponseWriter, filepath string) {
 
 // declaration of the handler function of type http.HandlerFunc to pass it in http.HandleFunc
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	tplPath := "templates/home.gohtml"
+	tplPath := "templates/home.html"
 	executeTemplate(w, tplPath)
 }
 
 // declaration of the handler function for contact page
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	tplPath := "templates/contact.gohtml"
+	tplPath := "templates/contact.html"
 	executeTemplate(w, tplPath)
 }
 
 // declaration of handler function for faq page
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	executeTemplate(w, "templates/faq.gohtml")
+	executeTemplate(w, "templates/faq.html")
 }
 
 func galleriesHandler(w http.ResponseWriter, r *http.Request) {
