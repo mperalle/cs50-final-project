@@ -2,19 +2,19 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/mperalle/cs50-final-project/controllers"
+	"github.com/mperalle/cs50-final-project/views"
 )
 
 func executeTemplate(w http.ResponseWriter, filepath string) {
-	//set the header content-type to html
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	//create template from template files
-	tpl, err := template.ParseFiles(filepath)
+	tpl, err := views.Parse(filepath)
 	//handle errors during parsing
 	if err != nil {
 		//logs error message out to terminal
@@ -25,17 +25,7 @@ func executeTemplate(w http.ResponseWriter, filepath string) {
 		return
 	}
 	//write output of execution to the response
-	err = tpl.Execute(w, nil)
-	//handle errors during execution
-	if err != nil {
-		//logs error message out to terminal
-		log.Printf("executing template: %v", err)
-		//writes 500 status code in the response
-		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
-		//prevents further code from executing
-		return
-	}
-
+	tpl.Execute(w, nil)
 }
 
 // declaration of the handler function of type http.HandlerFunc to pass it in http.HandleFunc
@@ -66,13 +56,37 @@ func main() {
 	//register handler functions to a new Chi Routeur
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Get("/", homeHandler)
-	r.Get("/contact", contactHandler)
-	r.Get("/faq", faqHandler)
+
+	//parsing template for home page
+	tpl, err := views.Parse("templates/home.html")
+	if err != nil {
+		panic(err)
+	}
+	//register handler with template already parsed for "/"
+	r.Get("/", controllers.StaticHandler(tpl))
+
+	//parsing template for contact page
+	tpl, err = views.Parse("templates/contact.html")
+	if err != nil {
+		panic(err)
+	}
+	//register handler with template already parsed for "/contact"
+	r.Get("/contact", controllers.StaticHandler(tpl))
+
+	//parsing template for faq page
+	tpl, err = views.Parse("templates/faq.html")
+	if err != nil {
+		panic(err)
+	}
+	//register handler with template already parsed for "/faq"
+	r.Get("/faq", controllers.StaticHandler(tpl))
+
 	r.Get("/galleries/{userID}", galleriesHandler)
+
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "404 Error Page not found", http.StatusNotFound)
 	})
+
 	//start the server on port :3000
 	fmt.Println("Starting the server on port :3000 ...")
 	//pass the routeur to ListenAndServe
