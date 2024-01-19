@@ -25,13 +25,13 @@ func main() {
 	r.Use(middleware.Logger)
 
 	//register handler with template already parsed for "/"
-	r.Get("/", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "home.html"))))
+	r.Get("/", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "layout-page.html", "home-page.html"))))
 
 	//register handler with template already parsed for "/contact"
 	r.Get("/contact", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "contact.html"))))
 
 	//register handler with template already parsed for "/faq"
-	r.Get("/faq", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "faq.html"))))
+	r.Get("/faq", controllers.FaqHandler(views.Must(views.ParseFS(templates.FS, "faq.html"))))
 
 	//register handler with template already parsed for "/login"
 	r.Get("/login", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "login.html"))))

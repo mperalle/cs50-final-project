@@ -1,5 +1,10 @@
 <h1>FAQ Page</h1>
-	<ul>
-		<li> <b>Is this application free to use ?</b> Yes it is completly free to use !</li>
-		<li> <b>How can I get in touch with you ?</b> You can contact me via the email in the contact page</li>
-	</ul>
+
+{{range .}}
+{{template "qa" .}}
+{{end}}
+
+{{define "qa"}}
+<li><b>{{.Question}}</b>{{.Answer}}</li>
+{{end}}
+
