@@ -1,4 +1,4 @@
-# Project Title
+# CS50-final-project-V1
 
 First incremental experiment with Golang for my CS50-final-project
 
